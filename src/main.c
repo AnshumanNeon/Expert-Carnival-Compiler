@@ -1,7 +1,7 @@
-#include <stdio.h>
+#include "./lexer/lexer.h"
 
 int main()
 {
-  printf("Hello, World!\n");
+  lexer_tokenize("test/helloworld.excl");
   return 0;
 }
