@@ -1,8 +1,10 @@
 #pragma once
 
-#ifndef TOKEN_DEF
-
-#define TOKEN_DEF
+typedef struct
+{
+  int token_type;
+  int token[4];
+} Token;
 
 // tokens
 
@@ -24,7 +26,7 @@ enum
     NOT_TOKEN,
     AND_TOKEN,
     OR_TOKEN,
-  } oprator_tokens;
+  } operator_tokens;
 
 enum
   {
@@ -62,7 +64,7 @@ enum
     FLOAT_TOKEN,
     STR_TOKEN,
     BOOL_TOKEN
-  } var_type_type;
+  } var_type_token;
 
 enum
   {
@@ -70,5 +72,3 @@ enum
     BRACKETS_TOKEN,
     SEMICOLON_TOKEN,
   } symbol_token;
-
-#endif
