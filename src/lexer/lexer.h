@@ -1,18 +1,20 @@
 #include "./scanner.h"
 #include "./token_functions.h"
+#include <string.h>
 
 int myAtoi(char* str)
 {
-    // Initialize result
-    int res = -1;
- 
-     // subtract the code from '0' to get numerical
-    // value and multiply res by 10 to shuffle
-    // digits left to update running total
-    for (int i = 0; str[i] != '\0'; ++i)
-        res = res * 10 + str[i] - '0';
-  
-    return res;
+  int isDigit = 0;
+  unsigned long j = 0;
+  while(j < strlen(str) && isDigit == 0){
+    if(str[j] >= 48 && str[j] <= 57)
+      isDigit = 0;
+    else
+      isDigit = 1;
+    j++;
+  }
+
+  return isDigit;
 }
 
 Token tokens[100];
@@ -20,7 +22,7 @@ int token_length = 0;
 
 Token check_for_token(char string[])
 {
-  if(myAtoi(string) > -1)
+  if(myAtoi(string) > 0)
     {
       return convert_to_symbol_token();
     }
