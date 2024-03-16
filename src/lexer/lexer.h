@@ -40,8 +40,6 @@ void lexer_tokenize(const char* filename)
   
   while(fscanf(file, "%s", word) != EOF)
     {
-      printf("%s\n", word);
-
       tokens[token_length] = check_for_token(word);
       token_length++;
     }
