@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-int myAtoi(char str[])
+int is_int(char str[])
 {
   int is = 0;
   for (int i = 0; i < (int)strlen(str); i++) {
@@ -17,15 +17,33 @@ int myAtoi(char str[])
   return is;
 }
 
+int is_operator(char* str)
+{
+  int is_operator = -1;
+
+  if(strcmp(str, "+") == 0) is_operator = 0;
+  if(strcmp(str, "-") == 0) is_operator = 1;
+  if(strcmp(str, "*") == 0) is_operator = 2;
+  if(strcmp(str, "/") == 0) is_operator = 3;
+  if(strcmp(str, "%") == 0) is_operator = 4;
+  if(strcmp(str, "=") == 0) is_operator = 5;
+  if(strcmp(str, "&") == 0) is_operator = 6;
+  if(strcmp(str, "|") == 0) is_operator = 7;
+  
+  return is_operator;
+}
+
 Token tokens[100];
 int token_length = 0;
 
 Token check_for_token(char string[])
 {
-  if(myAtoi(string) != -1)
+  if(is_int(string) != -1)
     {
       return convert_to_symbol_token();
     }
+
+  if(is_operator(string) > -1) return convert_to_operator_token();
   
   else
     {
