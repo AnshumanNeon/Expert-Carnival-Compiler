@@ -7,7 +7,7 @@ int is_int(char str[])
 {
   int is = 0;
   for (int i = 0; i < (int)strlen(str); i++) {
-    if(!isdigit(str[i]))
+    if(isdigit(str[i]) == 0)
       {
 	is = -1;
 	return is;
@@ -29,6 +29,9 @@ int is_operator(char* str)
   if(strcmp(str, "=") == 0) is_operator = 5;
   if(strcmp(str, "&") == 0) is_operator = 6;
   if(strcmp(str, "|") == 0) is_operator = 7;
+  if(strcmp(str, "=") == 0) is_operator = 8;
+  if(strcmp(str, "<") == 0) is_operator = 9;
+  if(strcmp(str, ">") == 0) is_operator = 10;
   
   return is_operator;
 }
