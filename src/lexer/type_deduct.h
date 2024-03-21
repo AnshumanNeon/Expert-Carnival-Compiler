@@ -7,11 +7,10 @@ int is_int(char str[])
 {
   int is = 0;
   for (int i = 0; i < (int)strlen(str); i++) {
-    if(isdigit(str[i]) == 0)
-      {
-	is = -1;
-	return is;
-      }
+    if(isdigit(str[i]) == 0) {
+      is = -1;
+      return is;
+    }
   }
 
   return is;
@@ -38,15 +37,13 @@ int is_operator(char* str)
 
 Token check_for_token(char string[])
 {
-  if(is_int(string) != -1)
-    {
-      return convert_to_symbol_token();
-    }
+  if(is_int(string) != -1) {
+    return convert_to_symbol_token();
+  }
 
   if(is_operator(string) > -1) return convert_to_operator_token();
   
-  else
-    {
-      return convert_to_keyword_token();
-    }
+  else {
+    return convert_to_keyword_token();
+  }
 }

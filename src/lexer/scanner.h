@@ -10,11 +10,10 @@ FILE* open_file(const char* filename)
 {
   FILE* file = fopen(filename, "r");
 
-  if(file == NULL)
-    {
-      printf("error opening the file");
-      return 0;
-    }
+  if(file == NULL) {
+    printf("error opening the file");
+    return 0;
+  }
 
   return file;
 }
