@@ -4,9 +4,6 @@ typedef struct
 {
   int token_type;
   char token[50];
-
-  // debug info
-  int line, col;
 } Token;
 
 // tokens
