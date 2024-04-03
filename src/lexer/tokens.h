@@ -3,7 +3,10 @@
 typedef struct
 {
   int token_type;
-  int token[4];
+  char token[50];
+
+  // debug info
+  int line, col;
 } Token;
 
 // tokens

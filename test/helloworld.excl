@@ -1,2 +1,9 @@
-1 + 2
-hello
+// hello world program
+
+function main() -> void {
+	 int x = 4; // const
+	 var int y = 2; // variable
+	 y = x - y;
+	 
+	 print("Hello, World!");
+}
