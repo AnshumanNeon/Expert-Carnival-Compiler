@@ -6,52 +6,42 @@
 Token tokens[100];
 int tokens_length = 0;
 
-void lexer_tokenize(const char* filename)
-{
+char* get_contents(const char* filename) {
   FILE* file = fopen(filename, "r");
   if(!file) {
-    printf("error\n");
-    return;
+    printf("error opening file\n");
+    return " ";
   }
 
-  char word[50];
-  
-  while(!feof(file)) {
-    fscanf(file, "%s", word);
+  // get size
+  fseek(file, 0, SEEK_END);
+  size_t file_size = ftell(file);
+  rewind(file);
 
-    strcpy(tokens[tokens_length].token, word);
-    tokens_length++;
+  // allocate to char*
+  char* buffer = (char*)malloc(file_size + 1);
+  if(buffer == NULL) {
+    printf("error allocating\n");
+    return " ";
   }
 
-  char ch = fgetc(file);
-
-  int line_n = 1, col_n = 1, i = 0;
-
-  while(!feof(file)) {
-    ch = fgetc(file);
-
-    // line numbers
-    if(ch == '\n') {
-      line_n++;
-      col_n = 1;
-    }
-
-    tokens[i].line = line_n;
-
-    // col number
-    if(ch == tokens[i].token[0]) {
-      tokens[i].col = col_n;
-
-      // go to next token only after assigning both line and column
-      i++;
-    }
-
-    col_n++;
+  size_t bytes_read = fread(buffer, sizeof(char), file_size, file);
+  if(bytes_read < file_size) {
+    printf("error reading size\n");
+    return " ";
   }
 
-  for(int i = 0; i < tokens_length; i++) {
-    printf("%s : line = %d, col = %d\n", tokens[i].token, tokens[i].line, tokens[i].col);
-  }
+  buffer[bytes_read] = '\0';
 
   fclose(file);
+  return buffer;
+}
+
+void lexer_tokenize(const char* filename)
+{
+  char* contents = get_contents(filename);
+  
+  printf("%s\n", contents);
+
+  free(contents);
 }
