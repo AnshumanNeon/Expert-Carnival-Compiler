@@ -1,17 +1,12 @@
 #pragma once
+#include <stdlib.h>
 
-typedef struct
-{
-  int token_type;
-  char token[50];
-} Token;
-
-// tokens
-
-enum {
+typedef enum {
+  // operator tokens
+  // -----
   ADDITION_TOKEN,
   SUB_TOKEN,
-  MUL_TOKE,
+  MUL_TOKEN,
   DIV_TOKEN,
   MOD_TOKEN,
   EXP_TOKEN,
@@ -25,9 +20,9 @@ enum {
   NOT_TOKEN,
   AND_TOKEN,
   OR_TOKEN,
-} operator_tokens;
-
-enum {
+  
+  //keyword tokens
+  // -----
   // functions
   FUNC_TOKEN,
   RETURN_TOKEN,
@@ -53,18 +48,82 @@ enum {
 
   // bools
   TRUE_TOKEN,
-  FALSE_TOKEN
-} keyword_tokens;
+  FALSE_TOKEN,
 
-enum {
+  // var type tokens
+  // ---
   INT_TOKEN,
   FLOAT_TOKEN,
   STR_TOKEN,
-  BOOL_TOKEN
-} var_type_token;
+  BOOL_TOKEN,
 
-enum {
+  // symbol tokens
+  // ----
   COMMENT_TOKEN,
   BRACKETS_TOKEN,
   SEMICOLON_TOKEN,
-} symbol_token;
+
+  // error token
+  // ---
+  ERROR_TOKEN,
+} token_type;
+
+typedef struct
+{
+  token_type type;
+  char* token;
+
+  // debug info
+  unsigned int line, col;
+} Token;
+
+typedef struct
+{
+  Token* tokens;
+  unsigned int length;
+
+  unsigned int MAX_SIZE;
+} Tokens;
+
+Tokens init_token() {
+  Tokens tokens;
+
+  // allocate
+  tokens.MAX_SIZE = 50;
+  tokens.tokens = (Token*)malloc(tokens.MAX_SIZE * sizeof(Token));
+
+  // set length
+  // 0 because no element is set right now
+  tokens.length = 0;
+
+  return tokens;
+}
+
+void free_tokens(Tokens tokens) {
+  free(tokens.tokens);
+  tokens.length = 0;
+}
+
+Tokens realloc_list(Tokens tokens) {
+  if(tokens.length > tokens.MAX_SIZE) {
+    tokens.MAX_SIZE = tokens.MAX_SIZE * 2;
+    tokens.tokens = (Token*)realloc(tokens.tokens, tokens.MAX_SIZE * sizeof(Token));
+  }
+
+  return tokens;
+}
+
+Tokens add_token(Tokens tokens, token_type type, char* token, unsigned int line, unsigned int col) {
+  Token new_token;
+  new_token.type = type;
+  new_token.token = token;
+  new_token.line = line;
+  new_token.col = col;
+  
+  tokens.tokens[tokens.length] = new_token;
+  tokens.length = tokens.length + 1;
+
+  tokens = realloc_list(tokens);
+  
+  return tokens;
+}
