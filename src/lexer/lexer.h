@@ -47,9 +47,35 @@ char* get_contents(const char* filename) {
   return contents;
 }
 
-token_type get_type(char token) {
+token_type get_type(char token, char next_token) {
   switch(token) {
   case '+': return ADDITION_TOKEN; break;
+  case '-': return SUB_TOKEN; break;
+  case '*': return MUL_TOKEN; break;
+  case '/': return DIV_TOKEN; break;
+  case '%': return MOD_TOKEN; break;
+  case '^': return EXP_TOKEN; break;
+  case '<':
+    if(next_token == '=') {return LESSER_OR_EQUAL_TOKEN; break;}
+    else {return LESSER_THAN_TOKEN; break;}
+  case '>': 
+    if(next_token == '='){ return GREATER_OR_EQUAL_TOKEN; break;}
+    else {return GREATER_THAN_TOKEN; break;}
+  case '=': 
+    if(next_token == '=') {return EQUAL_EQUAL_TOKEN; break;}
+    else {return EQUAL_TOKEN; break;}
+  case '!': 
+    if(next_token == '=') {return NOT_EQUAL_TOKEN; break;}
+    else {return NOT_TOKEN; break;}
+  case '&': 
+    if(next_token == '&') {return AND_TOKEN; break;}
+    else {return ERROR_TOKEN; break;}
+  case '|': 
+    if(next_token == '|') {return OR_TOKEN; break;}
+    if(next_token == '=') {return AND_OR_TOKEN; break;}
+    else {return ERROR_TOKEN; break;}
+  case 'i': 
+    if(next_token == 'f') {return IF_TOKEN; break;}
   default: return ERROR_TOKEN; break;
   };
 }
