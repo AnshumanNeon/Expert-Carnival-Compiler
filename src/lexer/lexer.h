@@ -47,7 +47,7 @@ char* get_contents(const char* filename) {
   return contents;
 }
 
-void string(int current_index, char* source) {
+Token string(int current_index, char* source) {
   int index = current_index;
   int line;
   Token token;
@@ -59,19 +59,21 @@ void string(int current_index, char* source) {
 
   if(source[index] == '\0') {
     token.type = ERROR_TOKEN;
-    return;
+    return token;
   }
 
   index++;
 
   strncpy(token.token, source + (current_index - 1), index - 1);
   token.type = STR_TOKEN;
+
+  return token;
 }
 
 // a structure for response type of the get_type_function
 struct get_type_response
 {
-  token_type type;
+  Tokens tokens;
   int current_index;
 } get_type_response;
 

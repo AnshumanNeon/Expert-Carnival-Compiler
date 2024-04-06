@@ -87,7 +87,7 @@ typedef struct
   char* token;
 
   // debug info
-  unsigned int line, col;
+  // unsigned int line, col;
 } Token;
 
 typedef struct
@@ -126,12 +126,10 @@ Tokens realloc_list(Tokens tokens) {
   return tokens;
 }
 
-Tokens add_token(Tokens tokens, token_type type, char* token, unsigned int line, unsigned int col) {
+Tokens add_token(Tokens tokens, token_type type, char* token) {
   Token new_token;
   new_token.type = type;
   new_token.token = token;
-  new_token.line = line;
-  new_token.col = col;
   
   tokens.tokens[tokens.length] = new_token;
   tokens.length = tokens.length + 1;
@@ -139,4 +137,8 @@ Tokens add_token(Tokens tokens, token_type type, char* token, unsigned int line,
   tokens = realloc_list(tokens);
   
   return tokens;
+}
+
+Tokens add_token(Tokens tokens, token_type type) {
+  return add_token(tokens, type, NULL);
 }
