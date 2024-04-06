@@ -12,6 +12,16 @@ typedef enum {
   EXP_TOKEN,
   EQUAL_TOKEN,
 
+  // Brackets
+  LEFT_PAREN_TOKEN, // (
+  RIGHT_PAREN_TOKEN, // )
+  LEFT_BRACE_TOKEN, // {
+  RIGHT_BRACE_TOKEN, // }
+  LEFT_SQR_PAREN_TOKEN, // [
+  RIGHT_SQR_PAREN_TOKEN, // ]
+
+  DOT_TOKEN, // .
+
   // comparison
   EQUAL_EQUAL_TOKEN,
   GREATER_OR_EQUAL_TOKEN,

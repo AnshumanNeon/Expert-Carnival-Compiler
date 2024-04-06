@@ -47,37 +47,90 @@ char* get_contents(const char* filename) {
   return contents;
 }
 
-token_type get_type(char token, char next_token) {
-  switch(token) {
-  case '+': return ADDITION_TOKEN; break;
-  case '-': return SUB_TOKEN; break;
-  case '*': return MUL_TOKEN; break;
-  case '/': return DIV_TOKEN; break;
-  case '%': return MOD_TOKEN; break;
-  case '^': return EXP_TOKEN; break;
+void string(int current_index, char* source) {
+  int index = current_index;
+  int line;
+  Token token;
+  
+  while(source[index] != '"' && source[index] != '\0') {
+    if(source[index] == '\n') line++;
+    index++;
+  }
+
+  if(source[index] == '\0') {
+    token.type = ERROR_TOKEN;
+    return;
+  }
+
+  index++;
+
+  strncpy(token.token, source + (current_index - 1), index - 1);
+  token.type = STR_TOKEN;
+}
+
+// a structure for response type of the get_type_function
+struct get_type_response
+{
+  token_type type;
+  int current_index;
+} get_type_response;
+
+struct get_type_response get_type(char* source, int current_index) {
+  struct get_type_response res;
+
+  res.current_index = current_index;
+  
+  switch(source[res.current_index]) {
+  case '+': res.type = ADDITION_TOKEN; break;
+  case '-': res.type = SUB_TOKEN; break;
+  case '*': res.type = MUL_TOKEN; break;
+  case '/':
+    if(source[res.current_index + 1] != '/') {
+      res.type = DIV_TOKEN;
+      break;
+    }
+    else {
+      current_index += 2;
+
+      while(source[res.current_index] != '\n' && source[res.current_index] != '\0') res.current_index++;
+    }
+  case '%': res.type = MOD_TOKEN; break;
+  case '^': res.type = EXP_TOKEN; break;
+  case '(': res.type = LEFT_PAREN_TOKEN; break;
+  case ')': res.type = RIGHT_PAREN_TOKEN; break;
+  case '[': res.type = LEFT_SQR_PAREN_TOKEN; break;
+  case ']': res.type = RIGHT_SQR_PAREN_TOKEN; break;
+  case '{': res.type = LEFT_BRACE_TOKEN; break;
+  case '}': res.type = RIGHT_BRACE_TOKEN; break;
+  case '.': res.type = DOT_TOKEN; break;
   case '<':
-    if(next_token == '=') {return LESSER_OR_EQUAL_TOKEN; break;}
-    else {return LESSER_THAN_TOKEN; break;}
+    if(source[res.current_index + 1] == '=') {res.type = LESSER_OR_EQUAL_TOKEN; break;}
+    else {res.type = LESSER_THAN_TOKEN; break;}
   case '>': 
-    if(next_token == '='){ return GREATER_OR_EQUAL_TOKEN; break;}
-    else {return GREATER_THAN_TOKEN; break;}
+    if(source[res.current_index + 1] == '='){ res.type = GREATER_OR_EQUAL_TOKEN; break;}
+    else {res.type = GREATER_THAN_TOKEN; break;}
   case '=': 
-    if(next_token == '=') {return EQUAL_EQUAL_TOKEN; break;}
-    else {return EQUAL_TOKEN; break;}
+    if(source[res.current_index + 1] == '=') {res.type = EQUAL_EQUAL_TOKEN; break;}
+    else {res.type = EQUAL_TOKEN; break;}
   case '!': 
-    if(next_token == '=') {return NOT_EQUAL_TOKEN; break;}
-    else {return NOT_TOKEN; break;}
+    if(source[res.current_index + 1] == '=') {res.type = NOT_EQUAL_TOKEN; break;}
+    else {res.type = NOT_TOKEN; break;}
   case '&': 
-    if(next_token == '&') {return AND_TOKEN; break;}
-    else {return ERROR_TOKEN; break;}
+    if(source[res.current_index + 1] == '&') {res.type = AND_TOKEN; break;}
+    else {res.type = ERROR_TOKEN; break;}
   case '|': 
-    if(next_token == '|') {return OR_TOKEN; break;}
-    if(next_token == '=') {return AND_OR_TOKEN; break;}
-    else {return ERROR_TOKEN; break;}
+    if(source[res.current_index + 1] == '|') {res.type = OR_TOKEN; break;}
+    if(source[res.current_index + 1] == '=') {res.type = AND_OR_TOKEN; break;}
+    else {res.type = ERROR_TOKEN; break;}
   case 'i': 
-    if(next_token == 'f') {return IF_TOKEN; break;}
-  default: return ERROR_TOKEN; break;
+    if(source[res.current_index + 1] == 'f') {res.type = IF_TOKEN; break;}
+  case '"':
+    res.current_index++; // because the current index is where string starts. it must end at least 1 pos later.
+    string(res.current_index, source);
+  default: res.type = ERROR_TOKEN; break;
   };
+
+  return res;
 }
 
 void lexer_tokenize(const char* filename)
