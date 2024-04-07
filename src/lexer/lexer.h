@@ -49,7 +49,7 @@ char* get_contents(const char* filename) {
 
 Token string(int current_index, char* source) {
   int index = current_index;
-  int line;
+  int line = 1;
   Token token;
   
   while(source[index] != '"' && source[index] != '\0') {
@@ -70,74 +70,92 @@ Token string(int current_index, char* source) {
   return token;
 }
 
-// a structure for response type of the get_type_function
-struct get_type_response
-{
-  Tokens tokens;
-  int current_index;
-} get_type_response;
-
-struct get_type_response get_type(char* source, int current_index) {
-  struct get_type_response res;
-
-  res.current_index = current_index;
+int add_current_token(char* source, int current_index_arg, Tokens tokens) {
+  int current_index = current_index_arg;
   
-  switch(source[res.current_index]) {
-  case '+': res.type = ADDITION_TOKEN; break;
-  case '-': res.type = SUB_TOKEN; break;
-  case '*': res.type = MUL_TOKEN; break;
+  switch(source[current_index]) {
+  case '+': add_token(tokens, ADD_TOKEN); break;
+  case '-': add_token(tokens, SUB_TOKEN); break;
+  case '*': add_token(tokens, MUL_TOKEN); break;
   case '/':
-    if(source[res.current_index + 1] != '/') {
-      res.type = DIV_TOKEN;
+    if(source[current_index + 1] != '/') {
+      add_token(tokens, DIV_TOKEN);
       break;
     }
     else {
       current_index += 2;
 
-      while(source[res.current_index] != '\n' && source[res.current_index] != '\0') res.current_index++;
+      while(source[current_index] != '\n' && source[current_index] != '\0') current_index++;
     }
-  case '%': res.type = MOD_TOKEN; break;
-  case '^': res.type = EXP_TOKEN; break;
-  case '(': res.type = LEFT_PAREN_TOKEN; break;
-  case ')': res.type = RIGHT_PAREN_TOKEN; break;
-  case '[': res.type = LEFT_SQR_PAREN_TOKEN; break;
-  case ']': res.type = RIGHT_SQR_PAREN_TOKEN; break;
-  case '{': res.type = LEFT_BRACE_TOKEN; break;
-  case '}': res.type = RIGHT_BRACE_TOKEN; break;
-  case '.': res.type = DOT_TOKEN; break;
+  case '%': add_token(tokens, MOD_TOKEN); break;
+  case '^': add_token(tokens, EXP_TOKEN); break;
+  case '(': add_token(tokens, LEFT_PAREN_TOKEN); break;
+  case ')': add_token(tokens, RIGHT_PAREN_TOKEN); break;
+  case '[': add_token(tokens, LEFT_SQR_PAREN_TOKEN); break;
+  case ']': add_token(tokens, RIGHT_SQR_PAREN_TOKEN); break;
+  case '{': add_token(tokens, LEFT_BRACE_TOKEN); break;
+  case '}': add_token(tokens, RIGHT_BRACE_TOKEN); break;
+  case '.': add_token(tokens, DOT_TOKEN); break;
   case '<':
-    if(source[res.current_index + 1] == '=') {res.type = LESSER_OR_EQUAL_TOKEN; break;}
-    else {res.type = LESSER_THAN_TOKEN; break;}
+    if(source[current_index + 1] == '=') {add_token(tokens, LESSER_OR_EQUAL_TOKEN); break;}
+    else {add_token(tokens, LESSER_THAN_TOKEN); break;}
   case '>': 
-    if(source[res.current_index + 1] == '='){ res.type = GREATER_OR_EQUAL_TOKEN; break;}
-    else {res.type = GREATER_THAN_TOKEN; break;}
+    if(source[current_index + 1] == '=') {add_token(tokens, GREATER_OR_EQUAL_TOKEN); break;}
+    else {add_token(tokens, GREATER_THAN_TOKEN); break;}
   case '=': 
-    if(source[res.current_index + 1] == '=') {res.type = EQUAL_EQUAL_TOKEN; break;}
-    else {res.type = EQUAL_TOKEN; break;}
+    if(source[current_index + 1] == '=') {add_token(tokens, EQUAL_EQUAL_TOKEN); break;}
+    else {add_token(tokens, EQUAL_TOKEN); break;}
   case '!': 
-    if(source[res.current_index + 1] == '=') {res.type = NOT_EQUAL_TOKEN; break;}
-    else {res.type = NOT_TOKEN; break;}
+    if(source[current_index + 1] == '=') {add_token(tokens, NOT_EQUAL_TOKEN); break;}
+    else {add_token(tokens, NOT_TOKEN); break;}
   case '&': 
-    if(source[res.current_index + 1] == '&') {res.type = AND_TOKEN; break;}
-    else {res.type = ERROR_TOKEN; break;}
+    if(source[current_index + 1] == '&') {add_token(tokens, AND_TOKEN); break;}
+    else {add_token(tokens, ERROR_TOKEN); break;}
   case '|': 
-    if(source[res.current_index + 1] == '|') {res.type = OR_TOKEN; break;}
-    if(source[res.current_index + 1] == '=') {res.type = AND_OR_TOKEN; break;}
-    else {res.type = ERROR_TOKEN; break;}
+    if(source[current_index + 1] == '|') {add_token(tokens, OR_TOKEN); break;}
+    if(source[current_index + 1] == '=') {add_token(tokens, AND_OR_TOKEN); break;}
+    else {add_token(tokens, ERROR_TOKEN); break;}
   case 'i': 
-    if(source[res.current_index + 1] == 'f') {res.type = IF_TOKEN; break;}
-  case '"':
-    res.current_index++; // because the current index is where string starts. it must end at least 1 pos later.
-    string(res.current_index, source);
-  default: res.type = ERROR_TOKEN; break;
+    if(source[current_index + 1] == 'f') {add_token(tokens, IF_TOKEN); break;}
+  case '"': {
+    // because the current index is where string starts. it must end at least 1 pos later.
+    current_index++;
+    Token str = string(current_index, source);
+    add_token_t(tokens, str);
+    break;
+  }
+  default: add_token(tokens, ERROR_TOKEN); break;
   };
 
-  return res;
+  return current_index;
 }
 
 void lexer_tokenize(const char* filename)
 {
   char* contents = get_contents(filename);
+
+  // initialize token list
+  Tokens token_list = init_token();
+
+  // loop through the token list
+  int current_index = 0;
+  int prev_index = 0;
+  while(contents[current_index] != '\0') {
+    prev_index = current_index;
+    current_index = add_current_token(contents, current_index, token_list);
+
+    if(prev_index == current_index) {
+      current_index++;
+    }
+  }
   
-  printf("%s\n", contents);
+  printf("Contents:\n%s\n", contents);
+  printf("-------------");
+  printf("Token list:\n");
+
+  for(unsigned int i = 0; i < token_list.length; i++) {
+    printf("\t Token Num: %d\t Token: %s", token_list.tokens[i].type, token_list.tokens[i].token);
+  }
+
+  printf("Done!");
 }

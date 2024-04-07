@@ -4,7 +4,7 @@
 typedef enum {
   // operator tokens
   // -----
-  ADDITION_TOKEN,
+  ADD_TOKEN,
   SUB_TOKEN,
   MUL_TOKEN,
   DIV_TOKEN,
@@ -126,7 +126,7 @@ Tokens realloc_list(Tokens tokens) {
   return tokens;
 }
 
-Tokens add_token(Tokens tokens, token_type type, char* token) {
+void add_token_primitive(Tokens tokens, token_type type, char* token) {
   Token new_token;
   new_token.type = type;
   new_token.token = token;
@@ -135,10 +135,12 @@ Tokens add_token(Tokens tokens, token_type type, char* token) {
   tokens.length = tokens.length + 1;
 
   tokens = realloc_list(tokens);
-  
-  return tokens;
 }
 
-Tokens add_token(Tokens tokens, token_type type) {
-  return add_token(tokens, type, NULL);
+void add_token(Tokens tokens, token_type type) {
+  add_token_primitive(tokens, type, NULL);
+}
+
+void add_token_t(Tokens tokens, Token token) {
+  add_token_primitive(tokens, token.type, token.token);
 }
